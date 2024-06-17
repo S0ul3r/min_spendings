@@ -17,25 +17,38 @@ class CustomListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Slidable(
-      endActionPane: ActionPane(
-        motion: const StretchMotion(),
-        children: [
-          // settings
-          SlidableAction(
-            onPressed: onEditPressed,
-            icon: Icons.settings,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      child: Slidable(
+        endActionPane: ActionPane(
+          motion: const StretchMotion(),
+          children: [
+            // settings
+            SlidableAction(
+              onPressed: onEditPressed,
+              icon: Icons.settings,
+              backgroundColor: Colors.grey,
+              borderRadius: BorderRadius.circular(10),
+            ),
+      
+            // delete
+            SlidableAction(
+              onPressed: onDeletePressed,
+              icon: Icons.delete,
+              backgroundColor: Colors.red,
+              borderRadius: BorderRadius.circular(10),
+            ),
+        ],),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.grey.shade300,
+            borderRadius: BorderRadius.circular(10),
           ),
-
-          // delete
-          SlidableAction(
-            onPressed: onDeletePressed,
-            icon: Icons.delete,
+          child: ListTile(
+            title: Text(title),
+            trailing: Text(trailing),
           ),
-      ],),
-      child: ListTile(
-        title: Text(title),
-        trailing: Text(trailing),
+        ),
       ),
     );
   }

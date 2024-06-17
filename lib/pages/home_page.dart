@@ -225,7 +225,9 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                 ),
-            
+
+                const SizedBox(height: 10),
+
                 // Expenses list UI
                 Expanded(
                   child: ListView.builder(
