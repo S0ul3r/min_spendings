@@ -16,3 +16,13 @@ String doubleToCurrency(double value) {
   ).format(value);
   return result;
 }
+
+// calculate number of months since start
+int calculateMonthsSinceStart(int startYear, startMonth, currentYear, currentMonth) {
+  return (currentYear - startYear) * 12 + currentMonth - startMonth + 1;
+}
+
+// current month name
+String currentMonthName() {
+  return DateFormat.MMMM().format(DateTime.now());
+}
