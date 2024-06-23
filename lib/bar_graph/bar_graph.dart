@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:min_spendings/bar-graph/single_bar.dart';
+import 'package:min_spendings/bar_graph/single_bar.dart';
 import 'package:min_spendings/constants.dart';
 import 'package:min_spendings/helper/helper_functions.dart';
 

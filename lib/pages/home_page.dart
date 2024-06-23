@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:min_spendings/bar-graph/bar_graph.dart';
+import 'package:min_spendings/bar_graph/bar_graph.dart';
 import 'package:min_spendings/components/custom_list_tile.dart';
 import 'package:min_spendings/constants.dart';
 import 'package:min_spendings/database/expense_database.dart';
