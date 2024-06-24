@@ -70,19 +70,23 @@ void openExpenseBox(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.grey.shade600),
               ),
+              padding: const EdgeInsets.only(left: 10),
               child: DropdownButton<String>(
                 isExpanded: true,
                 value: selectedCategory,
                 items: expenseCategories.map((String category) {
                   return DropdownMenuItem<String>(
                     value: category,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: Text(category,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold)),
+                    child: Row(
+                      children: [
+                        Icon(categoryIcons[category], color: Colors.white),
+                        const SizedBox(width: 10),
+                        Text(category,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                      ],
                     ),
                   );
                 }).toList(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:min_spendings/helper/helper_functions.dart';
+import 'package:min_spendings/constants.dart';
 
 class CustomListTile extends StatelessWidget {
   final String title;
@@ -25,6 +26,7 @@ class CustomListTile extends StatelessWidget {
       child: Slidable(
         endActionPane: ActionPane(
           motion: const StretchMotion(),
+          extentRatio: 0.4,
           children: [
             _buildSettingsAction(),
             _buildDeleteAction(),
@@ -56,7 +58,7 @@ class CustomListTile extends StatelessWidget {
   Widget _buildContainer() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade600,
+        color: Colors.grey.shade700,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Stack(
@@ -78,9 +80,15 @@ class CustomListTile extends StatelessWidget {
           color: getColorFromCategory(category),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Text(
-          category,
-          style: const TextStyle(color: Colors.white),
+        child: Row(
+          children: [
+            Icon(categoryIcons[category], color: Colors.white, size: 16),
+            const SizedBox(width: 4),
+            Text(
+              category,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ],
         ),
       ),
     );

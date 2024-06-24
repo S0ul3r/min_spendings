@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 const List<String> expenseCategories = [
   'Food',
   'Housing',
@@ -29,3 +31,17 @@ final List<String> monthNames = [
   'Nov',
   'Dec'
 ];
+
+// Category icons
+final Map<String, IconData> categoryIcons = {
+  'Food': Icons.fastfood,
+  'Housing': Icons.home,
+  'Transportation': Icons.directions_car,
+  'Debt': Icons.money_off,
+  'Health': Icons.local_hospital,
+  'Entertainment': Icons.movie,
+  'Subscription': Icons.subscriptions,
+  'Clothing': Icons.shopping_bag,
+  'Misc': Icons.category,
+  'Travel': Icons.airplanemode_active,
+};
