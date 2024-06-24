@@ -28,7 +28,6 @@ final List<String> monthNames = [
   'Dec'
 ];
 
-// Category icons
 final Map<String, IconData> categoryIcons = {
   'Food': Icons.fastfood,
   'Housing': Icons.home,

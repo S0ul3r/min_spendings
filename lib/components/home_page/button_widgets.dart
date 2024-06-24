@@ -1,6 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:min_spendings/models/expense.dart';
 
+class BaseButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final String text;
+  final Color color;
+
+  const BaseButton({
+    super.key,
+    required this.onPressed,
+    required this.text,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialButton(
+      onPressed: onPressed,
+      child: Container(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class SaveButton extends StatelessWidget {
   final Function(Expense?) onPressed;
   final Expense? expense;
@@ -9,20 +44,10 @@ class SaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
+    return BaseButton(
       onPressed: () => onPressed(expense),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.lightBlue.shade900,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        child: const Text('Save',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
-      ),
+      text: 'Save',
+      color: Colors.lightBlue.shade900,
     );
   }
 }
@@ -35,20 +60,10 @@ class DeleteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
+    return BaseButton(
       onPressed: () => onPressed(id),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        child: const Text('Delete',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
-      ),
+      text: 'Delete',
+      color: Colors.red,
     );
   }
 }
@@ -60,20 +75,10 @@ class CancelButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
+    return BaseButton(
       onPressed: onPressed,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey.shade600,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        child: const Text('Cancel',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
-      ),
+      text: 'Cancel',
+      color: Colors.grey.shade600,
     );
   }
 }

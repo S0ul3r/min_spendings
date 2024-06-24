@@ -22,62 +22,48 @@ class ExpenseDatabase extends ChangeNotifier {
   // add expense
   Future<void> addExpense(Expense expense) async {
     await isar.writeTxn(() => isar.expenses.put(expense));
-
-    // re-read from db
-    await readExpenses();
+    await _refreshExpenses();
   }
 
   // read expenses
   Future<void> readExpenses() async {
-    // fetch expenses from db
-    List<Expense> fetchedExpenses = await isar.expenses.where().findAll();
-
-    // give to local list
-    _expenses.clear();
-    _expenses.addAll(fetchedExpenses);
-
-    // update UI
-    notifyListeners();
+    await _refreshExpenses();
   }
 
   // update expense
   Future<void> updateExpense(int id, Expense updatedExpense) async {
     updatedExpense.id = id;
-
     await isar.writeTxn(() => isar.expenses.put(updatedExpense));
-
-    // re-read from db
-    await readExpenses();
+    await _refreshExpenses();
   }
 
   // delete expense
   Future<void> deleteExpense(int id) async {
     await isar.writeTxn(() => isar.expenses.delete(id));
-
-    // re-read from db
-    await readExpenses();
+    await _refreshExpenses();
   }
 
   // HELPERS
+  Future<void> _refreshExpenses() async {
+    List<Expense> fetchedExpenses = await isar.expenses.where().findAll();
+    _expenses.clear();
+    _expenses.addAll(fetchedExpenses);
+    notifyListeners();
+  }
+
   // get total amount
   Future<Map<String, double>> calculateMonthlyTotals() async {
-    // read from db
-    await readExpenses();
+    await _refreshExpenses();
 
     // create a map to keep track of total expenses for each month and year
     Map<String, double> monthlyTotals = {};
 
-    // loop through expenses
     for (var expense in _expenses) {
       // get month & year of expense
       String yearMonth = '${expense.date.year}-${expense.date.month}';
 
       // check if yearMonth exists in map
-      if (!monthlyTotals.containsKey(yearMonth)) {
-        monthlyTotals[yearMonth] = 0;
-      }
-
-      monthlyTotals[yearMonth] = monthlyTotals[yearMonth]! + expense.amount;
+      monthlyTotals[yearMonth] = (monthlyTotals[yearMonth] ?? 0) + expense.amount;
     }
 
     return monthlyTotals;
@@ -85,55 +71,39 @@ class ExpenseDatabase extends ChangeNotifier {
 
   // calculate current month total
   Future<double> calculateCurrentMonthTotal() async {
-    // read from db
-    await readExpenses();
-
-    // get current month
+    await _refreshExpenses();
     int currentMonth = DateTime.now().month;
     int currentYear = DateTime.now().year;
 
-    // get total for current month and year
-    double total = 0;
-    for (var expense in _expenses) {
-      if (expense.date.month == currentMonth &&
-          expense.date.year == currentYear) {
-        total += expense.amount;
-      }
-    }
-
+    double total = _expenses
+        .where((expense) => expense.date.month == currentMonth && expense.date.year == currentYear)
+        .fold(0.0, (total, expense) => total + expense.amount);
     return total;
   }
 
-  // Method to calculate the total for a specific month and year
+  // calculate total for a specific month and year
   Future<double> calculateMonthlyTotalForMonth(int year, int month) async {
-    double total = 0.0;
-    for (var expense in _expenses) {
-      if (expense.date.year == year && expense.date.month == month) {
-        total += expense.amount;
-      }
-    }
+    await _refreshExpenses();
+    double total = _expenses
+        .where((expense) => expense.date.year == year && expense.date.month == month)
+        .fold(0.0, (total, expense) => total + expense.amount);
     return total;
   }
 
   // get start month
   int getStartMonth() {
-    if (_expenses.isEmpty) {
-      return DateTime.now().month;
-    }
-
-    // sort expenses by date
-    _expenses.sort((a, b) => a.date.compareTo(b.date));
-    return _expenses.first.date.month;
+    if (_expenses.isEmpty) return DateTime.now().month;
+    return _getSortedExpenses().first.date.month;
   }
 
   // get start year
   int getStartYear() {
-    if (_expenses.isEmpty) {
-      return DateTime.now().year;
-    }
+    if (_expenses.isEmpty) return DateTime.now().year;
+    return _getSortedExpenses().first.date.year;
+  }
 
-    // sort expenses by date
+  List<Expense> _getSortedExpenses() {
     _expenses.sort((a, b) => a.date.compareTo(b.date));
-    return _expenses.first.date.year;
+    return _expenses;
   }
 }

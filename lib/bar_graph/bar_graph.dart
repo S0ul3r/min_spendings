@@ -68,17 +68,21 @@ class _MyBarGraphState extends State<MyBarGraph> {
     final double barWidth = screenWidth / 20;
     final double spaceBetweenBars = screenWidth / 40;
 
+    return _buildScrollableBarChart(barWidth, spaceBetweenBars);
+  }
+
+  Widget _buildScrollableBarChart(double barWidth, double spaceBetweenBars) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       controller: _scrollController,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
-        child: buildBarChart(barWidth, spaceBetweenBars),
+        child: _buildBarChart(barWidth, spaceBetweenBars),
       ),
     );
   }
 
-  Widget buildBarChart(double barWidth, double spaceBetweenBars) {
+  Widget _buildBarChart(double barWidth, double spaceBetweenBars) {
     return SizedBox(
       width: (barWidth + spaceBetweenBars) * barData.length,
       child: BarChart(
@@ -87,48 +91,52 @@ class _MyBarGraphState extends State<MyBarGraph> {
           maxY: calculateMaxValue(),
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
-          titlesData: buildTitlesData(),
-          barGroups: buildBarGroups(barWidth),
+          titlesData: _buildTitlesData(),
+          barGroups: _buildBarGroups(barWidth),
           alignment: BarChartAlignment.center,
           groupsSpace: spaceBetweenBars,
-          barTouchData: BarTouchData(
-            touchTooltipData: BarTouchTooltipData(
-              fitInsideHorizontally: true,
-              fitInsideVertically: true,
-              getTooltipColor: (group) => Colors.grey.shade800,
-              getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                return BarTooltipItem(
-                  rod.toY.toString(),
-                  const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                );
-              },
-            ),
-            touchCallback: (FlTouchEvent event, barTouchResponse) {
-              if (barTouchResponse != null &&
-                  barTouchResponse.spot != null &&
-                  event is FlTapUpEvent) {
-                widget.onBarTap(barTouchResponse.spot!.touchedBarGroupIndex);
-              }
-            },
-            handleBuiltInTouches: true,
-            touchExtraThreshold: EdgeInsets.symmetric(vertical: calculateMaxValue()),
-          ),
+          barTouchData: _buildBarTouchData(),
         ),
       ),
     );
   }
 
-  FlTitlesData buildTitlesData() {
+  BarTouchData _buildBarTouchData() {
+    return BarTouchData(
+      touchTooltipData: BarTouchTooltipData(
+        fitInsideHorizontally: true,
+        fitInsideVertically: true,
+        getTooltipColor: (group) => Colors.grey.shade800,
+        getTooltipItem: (group, groupIndex, rod, rodIndex) {
+          return BarTooltipItem(
+            rod.toY.toString(),
+            const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+          );
+        },
+      ),
+      touchCallback: (FlTouchEvent event, barTouchResponse) {
+        if (barTouchResponse != null &&
+            barTouchResponse.spot != null &&
+            event is FlTapUpEvent) {
+          widget.onBarTap(barTouchResponse.spot!.touchedBarGroupIndex);
+        }
+      },
+      handleBuiltInTouches: true,
+      touchExtraThreshold: EdgeInsets.symmetric(vertical: calculateMaxValue()),
+    );
+  }
+
+  FlTitlesData _buildTitlesData() {
     return FlTitlesData(
       show: true,
       topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
       leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
       rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      bottomTitles: buildBottomTitles(),
+      bottomTitles: _buildBottomTitles(),
     );
   }
 
-  AxisTitles buildBottomTitles() {
+  AxisTitles _buildBottomTitles() {
     return AxisTitles(
       sideTitles: SideTitles(
         showTitles: true,
@@ -149,7 +157,7 @@ class _MyBarGraphState extends State<MyBarGraph> {
     );
   }
 
-  List<BarChartGroupData> buildBarGroups(double barWidth) {
+  List<BarChartGroupData> _buildBarGroups(double barWidth) {
     return barData
         .map((data) => BarChartGroupData(
               x: data.x,

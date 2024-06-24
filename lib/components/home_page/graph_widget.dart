@@ -17,35 +17,42 @@ class GraphWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 250,
-      child: FutureBuilder<Map<String, double>>(
-        future: monthlyTotalsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData) {
-            final Map<String, double> monthlyTotals = snapshot.data ?? {};
+      child: _buildFutureBuilder(),
+    );
+  }
 
-            final List<double> monthlySummary = List.generate(
-              12,
-              (index) {
-                final int month = index + 1;
-                final String yearMonth = '$startYear-$month';
-                return monthlyTotals[yearMonth] ?? 0.0;
-              },
-            );
+  Widget _buildFutureBuilder() {
+    return FutureBuilder<Map<String, double>>(
+      future: monthlyTotalsFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+          final Map<String, double> monthlyTotals = snapshot.data ?? {};
+          final List<double> monthlySummary = _generateMonthlySummary(monthlyTotals);
 
-            return MyBarGraph(
-              monthlySummary: monthlySummary,
-              startMonth: 1,
-              onBarTap: (index) {
-                final int month = index + 1;
-                onBarTap(startYear, month);
-              },
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
+          return _buildBarGraph(monthlySummary);
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+
+  List<double> _generateMonthlySummary(Map<String, double> monthlyTotals) {
+    return List.generate(12, (index) {
+      final int month = index + 1;
+      final String yearMonth = '$startYear-$month';
+      return monthlyTotals[yearMonth] ?? 0.0;
+    });
+  }
+
+  Widget _buildBarGraph(List<double> monthlySummary) {
+    return MyBarGraph(
+      monthlySummary: monthlySummary,
+      startMonth: 1,
+      onBarTap: (index) {
+        final int month = index + 1;
+        onBarTap(startYear, month);
+      },
     );
   }
 }

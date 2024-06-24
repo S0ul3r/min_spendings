@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:min_spendings/constants.dart';
 import 'package:min_spendings/database/expense_database.dart';
 import 'package:min_spendings/models/expense.dart';
-import 'package:min_spendings/components/home_page/app_bar_widget.dart';
+import 'package:min_spendings/features/home/widgets/app_bar_widget.dart';
 import 'package:min_spendings/components/home_page/expense_dialog.dart';
 import 'package:min_spendings/components/home_page/expense_list_widget.dart';
 import 'package:min_spendings/components/home_page/graph_widget.dart';
@@ -17,15 +17,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   // text controllers
-  TextEditingController nameController = TextEditingController();
-  TextEditingController amountController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController amountController = TextEditingController();
   String selectedCategory = expenseCategories[0];
 
   // future for graph and monthly total
   Future<Map<String, double>>? _monthlyTotalsFuture;
-  Future<double>? _calculateCurrentMonthTotal;
+  Future<double>? _currentMonthTotalFuture;
 
-  // selected month and year for expenses
   int selectedMonth = DateTime.now().month;
   int selectedYear = DateTime.now().year;
 
@@ -44,7 +43,7 @@ class _HomePageState extends State<HomePage> {
   void refreshData() {
     _monthlyTotalsFuture = Provider.of<ExpenseDatabase>(context, listen: false)
         .calculateMonthlyTotals();
-    _calculateCurrentMonthTotal =
+    _currentMonthTotalFuture =
         Provider.of<ExpenseDatabase>(context, listen: false)
             .calculateCurrentMonthTotal();
   }
@@ -57,7 +56,7 @@ class _HomePageState extends State<HomePage> {
     });
 
     // Update the future for the selected month total
-    _calculateCurrentMonthTotal =
+    _currentMonthTotalFuture =
         Provider.of<ExpenseDatabase>(context, listen: false)
             .calculateMonthlyTotalForMonth(year, month);
   }
@@ -98,8 +97,8 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(
                           color: Colors.grey.shade300,
                           fontSize: 24,
-                          fontWeight: FontWeight.bold)), // Add text "Add"
-                  const SizedBox(width: 10), // Add space between text and icon
+                          fontWeight: FontWeight.bold)), // Add text
+                  const SizedBox(width: 10), // Space between text and icon
                   Icon(Icons.add, color: Colors.grey.shade300, size: 40),
                 ],
               ),
@@ -108,7 +107,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           appBar: CustomAppBar(
-            calculateCurrentMonthTotal: _calculateCurrentMonthTotal,
+            calculateCurrentMonthTotal: _currentMonthTotalFuture,
             currentMonthName: monthNames[selectedMonth - 1],
             currentYear: selectedYear,
           ),
