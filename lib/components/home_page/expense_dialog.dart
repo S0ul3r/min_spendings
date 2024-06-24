@@ -12,6 +12,8 @@ void openExpenseBox(
     TextEditingController amountController,
     String selectedCategory,
     Function refreshData,
+    int selectedMonth,
+    int selectedYear,
     {Expense? expense}) {
   if (expense != null) {
     nameController.text = expense.name;
@@ -121,7 +123,8 @@ void openExpenseBox(
                     Expense newExpense = Expense(
                       name: nameController.text,
                       amount: stringToDouble(amountController.text),
-                      date: DateTime.now(),
+                      date: DateTime(
+                          selectedYear, selectedMonth, DateTime.now().day),
                       category: selectedCategory,
                     );
                     await context

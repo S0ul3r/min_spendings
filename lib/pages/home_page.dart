@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:min_spendings/constants.dart';
 import 'package:min_spendings/database/expense_database.dart';
-import 'package:min_spendings/helper/helper_functions.dart';
 import 'package:min_spendings/models/expense.dart';
-import 'package:provider/provider.dart';
-import 'package:min_spendings/components/home_page/expense_dialog.dart';
 import 'package:min_spendings/components/home_page/app_bar_widget.dart';
-import 'package:min_spendings/components/home_page/graph_widget.dart';
+import 'package:min_spendings/components/home_page/expense_dialog.dart';
 import 'package:min_spendings/components/home_page/expense_list_widget.dart';
+import 'package:min_spendings/components/home_page/graph_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,6 +24,10 @@ class _HomePageState extends State<HomePage> {
   // future for graph and monthly total
   Future<Map<String, double>>? _monthlyTotalsFuture;
   Future<double>? _calculateCurrentMonthTotal;
+
+  // selected month and year for expenses
+  int selectedMonth = DateTime.now().month;
+  int selectedYear = DateTime.now().year;
 
   @override
   void initState() {
@@ -46,25 +49,28 @@ class _HomePageState extends State<HomePage> {
             .calculateCurrentMonthTotal();
   }
 
+  // handle bar tap
+  void handleBarTap(int year, int month) {
+    setState(() {
+      selectedYear = year;
+      selectedMonth = month;
+    });
+
+    // Update the future for the selected month total
+    _calculateCurrentMonthTotal =
+        Provider.of<ExpenseDatabase>(context, listen: false)
+            .calculateMonthlyTotalForMonth(year, month);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ExpenseDatabase>(
       builder: (context, value, child) {
-        // get dates
-        final int startMonth = value.getStartMonth();
-        final int startYear = value.getStartYear();
-        final int currentMonth = DateTime.now().month;
-        final int currentYear = DateTime.now().year;
-
-        // calculate number of months since first month
-        final int monthsSinceStart = calculateMonthsSinceStart(
-            startYear, startMonth, currentYear, currentMonth);
-
-        // display expenses for the current month and current year
-        final List<Expense> currentMonthExpenses = value.expenses
+        // display expenses for the selected month and year
+        final List<Expense> selectedMonthExpenses = value.expenses
             .where((expense) =>
-                expense.date.month == currentMonth &&
-                expense.date.year == currentYear)
+                expense.date.month == selectedMonth &&
+                expense.date.year == selectedYear)
             .toList();
 
         // return UI
@@ -74,8 +80,15 @@ class _HomePageState extends State<HomePage> {
             height: 60,
             child: FloatingActionButton.extended(
               onPressed: () {
-                openExpenseBox(context, nameController, amountController,
-                    selectedCategory, refreshData);
+                openExpenseBox(
+                  context,
+                  nameController,
+                  amountController,
+                  selectedCategory,
+                  refreshData,
+                  selectedMonth,
+                  selectedYear,
+                );
               },
               backgroundColor: Colors.blue.shade900,
               label: Row(
@@ -96,25 +109,26 @@ class _HomePageState extends State<HomePage> {
           ),
           appBar: CustomAppBar(
             calculateCurrentMonthTotal: _calculateCurrentMonthTotal,
-            currentMonthName: currentMonthName(),
-            currentYear: currentYear,
+            currentMonthName: monthNames[selectedMonth - 1],
+            currentYear: selectedYear,
           ),
           body: SafeArea(
             child: Column(
               children: [
                 GraphWidget(
                   monthlyTotalsFuture: _monthlyTotalsFuture,
-                  monthsSinceStart: monthsSinceStart,
-                  startMonth: startMonth,
-                  startYear: startYear,
+                  startYear: selectedYear,
+                  onBarTap: handleBarTap,
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 8),
                 ExpenseListWidget(
-                  currentMonthExpenses: currentMonthExpenses,
+                  currentMonthExpenses: selectedMonthExpenses,
                   nameController: nameController,
                   amountController: amountController,
                   selectedCategory: selectedCategory,
                   refreshData: refreshData,
+                  selectedMonth: selectedMonth,
+                  selectedYear: selectedYear,
                 ),
               ],
             ),

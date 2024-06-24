@@ -13,10 +13,6 @@ const List<String> expenseCategories = [
   'Travel',
 ];
 
-// bar dimensions
-double barWidth = 20;
-double spaceBetweenBars = 20;
-
 final List<String> monthNames = [
   'Jan',
   'Feb',

@@ -3,16 +3,14 @@ import 'package:min_spendings/bar_graph/bar_graph.dart';
 
 class GraphWidget extends StatelessWidget {
   final Future<Map<String, double>>? monthlyTotalsFuture;
-  final int monthsSinceStart;
-  final int startMonth;
   final int startYear;
+  final Function(int, int) onBarTap;
 
   const GraphWidget({
     super.key,
     required this.monthlyTotalsFuture,
-    required this.monthsSinceStart,
-    required this.startMonth,
     required this.startYear,
+    required this.onBarTap,
   });
 
   @override
@@ -27,18 +25,21 @@ class GraphWidget extends StatelessWidget {
             final Map<String, double> monthlyTotals = snapshot.data ?? {};
 
             final List<double> monthlySummary = List.generate(
-              monthsSinceStart,
+              12,
               (index) {
-                final int year = startYear + (startMonth + index - 1) ~/ 12;
-                final int month = (startMonth + index - 1) % 12 + 1;
-                final String yearMonth = '$year-$month';
+                final int month = index + 1;
+                final String yearMonth = '$startYear-$month';
                 return monthlyTotals[yearMonth] ?? 0.0;
               },
             );
 
             return MyBarGraph(
               monthlySummary: monthlySummary,
-              startMonth: startMonth,
+              startMonth: 1,
+              onBarTap: (index) {
+                final int month = index + 1;
+                onBarTap(startYear, month);
+              },
             );
           } else {
             return const Center(child: CircularProgressIndicator());

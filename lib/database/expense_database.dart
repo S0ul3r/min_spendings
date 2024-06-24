@@ -104,6 +104,17 @@ class ExpenseDatabase extends ChangeNotifier {
     return total;
   }
 
+  // Method to calculate the total for a specific month and year
+  Future<double> calculateMonthlyTotalForMonth(int year, int month) async {
+    double total = 0.0;
+    for (var expense in _expenses) {
+      if (expense.date.year == year && expense.date.month == month) {
+        total += expense.amount;
+      }
+    }
+    return total;
+  }
+
   // get start month
   int getStartMonth() {
     if (_expenses.isEmpty) {

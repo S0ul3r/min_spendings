@@ -10,6 +10,8 @@ class ExpenseListWidget extends StatelessWidget {
   final TextEditingController amountController;
   final String selectedCategory;
   final Function refreshData;
+  final int selectedMonth;
+  final int selectedYear;
 
   const ExpenseListWidget({
     super.key,
@@ -18,6 +20,8 @@ class ExpenseListWidget extends StatelessWidget {
     required this.amountController,
     required this.selectedCategory,
     required this.refreshData,
+    required this.selectedMonth,
+    required this.selectedYear,
   });
 
   @override
@@ -38,6 +42,8 @@ class ExpenseListWidget extends StatelessWidget {
               amountController,
               selectedCategory,
               refreshData,
+              selectedMonth,
+              selectedYear,
               expense: expense,
             ),
             onDeletePressed: (context) => openDeleteBox(

@@ -2,14 +2,18 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:min_spendings/bar_graph/single_bar.dart';
 import 'package:min_spendings/constants.dart';
-import 'package:min_spendings/helper/helper_functions.dart';
 
 class MyBarGraph extends StatefulWidget {
   final List<double> monthlySummary;
   final int startMonth;
+  final Function(int) onBarTap;
 
-  const MyBarGraph(
-      {super.key, required this.monthlySummary, required this.startMonth});
+  const MyBarGraph({
+    super.key,
+    required this.monthlySummary,
+    required this.startMonth,
+    required this.onBarTap,
+  });
 
   @override
   State<MyBarGraph> createState() => _MyBarGraphState();
@@ -58,17 +62,23 @@ class _MyBarGraphState extends State<MyBarGraph> {
   @override
   Widget build(BuildContext context) {
     initializeBarData();
+
+    // Calculate bar width and space between bars based on screen width
+    final screenWidth = MediaQuery.of(context).size.width;
+    final double barWidth = screenWidth / 20;
+    final double spaceBetweenBars = screenWidth / 40;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       controller: _scrollController,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0),
-        child: buildBarChart(),
+        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+        child: buildBarChart(barWidth, spaceBetweenBars),
       ),
     );
   }
 
-  Widget buildBarChart() {
+  Widget buildBarChart(double barWidth, double spaceBetweenBars) {
     return SizedBox(
       width: (barWidth + spaceBetweenBars) * barData.length,
       child: BarChart(
@@ -78,9 +88,31 @@ class _MyBarGraphState extends State<MyBarGraph> {
           gridData: const FlGridData(show: false),
           borderData: FlBorderData(show: false),
           titlesData: buildTitlesData(),
-          barGroups: buildBarGroups(),
+          barGroups: buildBarGroups(barWidth),
           alignment: BarChartAlignment.center,
           groupsSpace: spaceBetweenBars,
+          barTouchData: BarTouchData(
+            touchTooltipData: BarTouchTooltipData(
+              fitInsideHorizontally: true,
+              fitInsideVertically: true,
+              getTooltipColor: (group) => Colors.grey.shade800,
+              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                return BarTooltipItem(
+                  rod.toY.toString(),
+                  const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                );
+              },
+            ),
+            touchCallback: (FlTouchEvent event, barTouchResponse) {
+              if (barTouchResponse != null &&
+                  barTouchResponse.spot != null &&
+                  event is FlTapUpEvent) {
+                widget.onBarTap(barTouchResponse.spot!.touchedBarGroupIndex);
+              }
+            },
+            handleBuiltInTouches: true,
+            touchExtraThreshold: EdgeInsets.symmetric(vertical: calculateMaxValue()),
+          ),
         ),
       ),
     );
@@ -101,7 +133,7 @@ class _MyBarGraphState extends State<MyBarGraph> {
       sideTitles: SideTitles(
         showTitles: true,
         getTitlesWidget: (value, titleMeta) {
-          final monthIndex = (getCurrentMonthIndex() + value.toInt()) % 12;
+          final monthIndex = (widget.startMonth + value.toInt() - 1) % 12;
           final text = monthNames[monthIndex];
           return SideTitleWidget(
             axisSide: titleMeta.axisSide,
@@ -117,7 +149,7 @@ class _MyBarGraphState extends State<MyBarGraph> {
     );
   }
 
-  List<BarChartGroupData> buildBarGroups() {
+  List<BarChartGroupData> buildBarGroups(double barWidth) {
     return barData
         .map((data) => BarChartGroupData(
               x: data.x,
@@ -130,7 +162,7 @@ class _MyBarGraphState extends State<MyBarGraph> {
                   backDrawRodData: BackgroundBarChartRodData(
                     show: true,
                     toY: calculateMaxValue(),
-                    color: Colors.grey.shade500,
+                    color: Colors.grey.shade600,
                   ),
                 ),
               ],
