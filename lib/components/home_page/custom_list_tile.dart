@@ -39,7 +39,7 @@ class CustomListTile extends StatelessWidget {
     return SlidableAction(
       onPressed: onEditPressed,
       icon: Icons.settings,
-      backgroundColor: Colors.grey.shade600,
+      backgroundColor: Colors.grey.shade500,
       borderRadius: BorderRadius.circular(10),
     );
   }
@@ -48,7 +48,7 @@ class CustomListTile extends StatelessWidget {
     return SlidableAction(
       onPressed: onDeletePressed,
       icon: Icons.delete,
-      backgroundColor: Colors.red,
+      backgroundColor: Colors.red.shade400,
       borderRadius: BorderRadius.circular(10),
     );
   }
@@ -61,8 +61,8 @@ class CustomListTile extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          _buildCategoryContainer(),
           _buildListTile(),
+          _buildCategoryContainer(),
         ],
       ),
     );
@@ -70,7 +70,7 @@ class CustomListTile extends StatelessWidget {
 
   Widget _buildCategoryContainer() {
     return Positioned(
-      left: 130.0,
+      right: 120.0,
       top: 16.0,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -91,8 +91,10 @@ class CustomListTile extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: ListTile(
         contentPadding: const EdgeInsets.only(left: 0, right: 0),
-        title: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16)),
-        trailing: Text(trailing, style: const TextStyle(color: Colors.white, fontSize: 16)),
+        title: Text(title,
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
+        trailing: Text(trailing,
+            style: const TextStyle(color: Colors.white, fontSize: 16)),
       ),
     );
   }

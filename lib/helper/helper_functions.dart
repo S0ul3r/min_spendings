@@ -19,7 +19,8 @@ String doubleToCurrency(double value) {
 }
 
 // calculate number of months since start
-int calculateMonthsSinceStart(int startYear, startMonth, currentYear, currentMonth) {
+int calculateMonthsSinceStart(
+    int startYear, startMonth, currentYear, currentMonth) {
   return (currentYear - startYear) * 12 + currentMonth - startMonth + 1;
 }
 

@@ -3,17 +3,15 @@ import 'package:min_spendings/database/expense_database.dart';
 import 'package:provider/provider.dart';
 import 'pages/home_page.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // initialize isar db
   await ExpenseDatabase.init();
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => ExpenseDatabase(),
-      child: const MyApp(),
-    )
-  );
+  runApp(ChangeNotifierProvider(
+    create: (context) => ExpenseDatabase(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

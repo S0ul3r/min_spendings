@@ -4,7 +4,7 @@ import 'package:isar/isar.dart';
 import 'package:min_spendings/models/expense.dart';
 import 'package:path_provider/path_provider.dart';
 
-class ExpenseDatabase extends ChangeNotifier{
+class ExpenseDatabase extends ChangeNotifier {
   static late Isar isar;
   final List<Expense> _expenses = [];
 
@@ -14,7 +14,7 @@ class ExpenseDatabase extends ChangeNotifier{
     final dir = await getApplicationDocumentsDirectory();
     isar = await Isar.open([ExpenseSchema], directory: dir.path);
   }
-  
+
   // GETTERS
   List<Expense> get expenses => _expenses;
 
@@ -95,14 +95,15 @@ class ExpenseDatabase extends ChangeNotifier{
     // get total for current month and year
     double total = 0;
     for (var expense in _expenses) {
-      if (expense.date.month == currentMonth && expense.date.year == currentYear) {
+      if (expense.date.month == currentMonth &&
+          expense.date.year == currentYear) {
         total += expense.amount;
       }
     }
 
     return total;
   }
-  
+
   // get start month
   int getStartMonth() {
     if (_expenses.isEmpty) {

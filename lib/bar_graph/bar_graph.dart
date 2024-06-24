@@ -8,7 +8,8 @@ class MyBarGraph extends StatefulWidget {
   final List<double> monthlySummary;
   final int startMonth;
 
-  const MyBarGraph({super.key, required this.monthlySummary, required this.startMonth});
+  const MyBarGraph(
+      {super.key, required this.monthlySummary, required this.startMonth});
 
   @override
   State<MyBarGraph> createState() => _MyBarGraphState();
@@ -104,7 +105,11 @@ class _MyBarGraphState extends State<MyBarGraph> {
           final text = monthNames[monthIndex];
           return SideTitleWidget(
             axisSide: titleMeta.axisSide,
-            child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+            child: Text(text,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold)),
           );
         },
         reservedSize: 24,
@@ -113,21 +118,23 @@ class _MyBarGraphState extends State<MyBarGraph> {
   }
 
   List<BarChartGroupData> buildBarGroups() {
-    return barData.map((data) => BarChartGroupData(
-      x: data.x,
-      barRods: [
-        BarChartRodData(
-          toY: data.y,
-          width: barWidth,
-          borderRadius: BorderRadius.circular(6),
-          color: Colors.lightBlue.shade900,
-          backDrawRodData: BackgroundBarChartRodData(
-            show: true,
-            toY: calculateMaxValue(),
-            color: Colors.grey.shade500,
-          ),
-        ),
-      ],
-    )).toList();
+    return barData
+        .map((data) => BarChartGroupData(
+              x: data.x,
+              barRods: [
+                BarChartRodData(
+                  toY: data.y,
+                  width: barWidth,
+                  borderRadius: BorderRadius.circular(6),
+                  color: Colors.lightBlue.shade900,
+                  backDrawRodData: BackgroundBarChartRodData(
+                    show: true,
+                    toY: calculateMaxValue(),
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              ],
+            ))
+        .toList();
   }
 }
