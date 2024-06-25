@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:min_spendings/constants.dart';
 import 'package:min_spendings/database/expense_database.dart';
 import 'package:min_spendings/models/expense.dart';
-
 import 'package:min_spendings/components/home_page/expense_dialog.dart';
 import 'package:min_spendings/components/home_page/expense_list_widget.dart';
 import 'package:min_spendings/components/home_page/graph_widget.dart';
