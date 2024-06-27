@@ -21,3 +21,8 @@ Clicking on the bar will open a list of expenses for that month. Bar Y axis limi
 - Add different currencies
 - Add/remove categories
 - Track expenses from Google Wallet - if possible
+- Synchronization - accounts
+- Export to CSV
+- Write to an author link
+- Clear whole database (clean whole app)
+- Backups - late idea
