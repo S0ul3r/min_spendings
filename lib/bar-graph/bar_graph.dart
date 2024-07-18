@@ -1,16 +1,14 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:min_spendings/bar-graph/single_bar.dart';
+import 'package:min_spendings/constants.dart';
+import 'package:min_spendings/helper/helper_functions.dart';
 
 class MyBarGraph extends StatefulWidget {
   final List<double> monthlySummary;
   final int startMonth;
 
-  const MyBarGraph({ 
-    super.key, 
-    required this.monthlySummary, 
-    required this.startMonth 
-  });
+  const MyBarGraph({super.key, required this.monthlySummary, required this.startMonth});
 
   @override
   State<MyBarGraph> createState() => _MyBarGraphState();
@@ -19,9 +17,7 @@ class MyBarGraph extends StatefulWidget {
 class _MyBarGraphState extends State<MyBarGraph> {
   // List for data for each bar
   List<SingleBar> barData = [];
-  // bar dimensions
-  double barWidth = 20;
-  double spaceBetweenBars = 15;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -34,11 +30,8 @@ class _MyBarGraphState extends State<MyBarGraph> {
   // initialize bar data
   void initializeBarData() {
     barData = List.generate(
-      widget.monthlySummary.length, 
-      (index) => SingleBar(
-        x: index, 
-        y: widget.monthlySummary[index]
-      ),
+      widget.monthlySummary.length,
+      (index) => SingleBar(x: index, y: widget.monthlySummary[index]),
     );
   }
 
@@ -53,86 +46,88 @@ class _MyBarGraphState extends State<MyBarGraph> {
     return max;
   }
 
-  // scroll controller so it scrolls to the lastest month
-  final ScrollController _scrollController = ScrollController();
   void scrollToEnd() {
     _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent, 
-      duration: const Duration(seconds: 1), 
-      curve: Curves.fastOutSlowIn);
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(seconds: 1),
+      curve: Curves.fastOutSlowIn,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    // initialize bar data
     initializeBarData();
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       controller: _scrollController,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25.0),
-        child: SizedBox(
-          width: barWidth * barData.length + spaceBetweenBars * (barData.length - 1),
-          child: BarChart(
-            BarChartData(
-              minY: 0,
-              maxY: calculateMaxValue(),
-              gridData: const FlGridData(show: false),
-              borderData: FlBorderData(show: false),
-              titlesData: const FlTitlesData(
-                show: true,
-                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                bottomTitles: AxisTitles(sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: getBottomTitles,
-                  reservedSize: 24,
-                )),
-              ),
-              barGroups: barData.map(
-                (data) => BarChartGroupData(
-                  x: data.x, 
-                  barRods: [
-                    BarChartRodData(
-                      toY: data.y,
-                      width: barWidth,
-                      borderRadius: BorderRadius.circular(6),
-                      color: Colors.deepOrange.shade600,
-                      backDrawRodData: BackgroundBarChartRodData(
-                        show: true,
-                        toY: calculateMaxValue(),
-                        color: Colors.grey.shade300,
-                      )
-                    ),
-                  ],
-                ),
-              ).toList(),
-              alignment: BarChartAlignment.center,
-              groupsSpace: spaceBetweenBars,
-            ),
-          ),
+        child: buildBarChart(),
+      ),
+    );
+  }
+
+  Widget buildBarChart() {
+    return SizedBox(
+      width: (barWidth + spaceBetweenBars) * barData.length,
+      child: BarChart(
+        BarChartData(
+          minY: 0,
+          maxY: calculateMaxValue(),
+          gridData: const FlGridData(show: false),
+          borderData: FlBorderData(show: false),
+          titlesData: buildTitlesData(),
+          barGroups: buildBarGroups(),
+          alignment: BarChartAlignment.center,
+          groupsSpace: spaceBetweenBars,
         ),
       ),
     );
   }
-}
 
-// get bottom titles
-Widget getBottomTitles(double value, TitleMeta titleMeta) {
-  const textstyle = TextStyle(
-    color: Colors.white,
-    fontSize: 14,
-    fontWeight: FontWeight.bold,
-  );
+  FlTitlesData buildTitlesData() {
+    return FlTitlesData(
+      show: true,
+      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      bottomTitles: buildBottomTitles(),
+    );
+  }
 
-  final monthNames = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
+  AxisTitles buildBottomTitles() {
+    return AxisTitles(
+      sideTitles: SideTitles(
+        showTitles: true,
+        getTitlesWidget: (value, titleMeta) {
+          final monthIndex = (getCurrentMonthIndex() + value.toInt()) % 12;
+          final text = monthNames[monthIndex];
+          return SideTitleWidget(
+            axisSide: titleMeta.axisSide,
+            child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+          );
+        },
+        reservedSize: 24,
+      ),
+    );
+  }
 
-  final monthIndex = value.toInt() % 12;
-  final text = monthNames[monthIndex];
-
-  return SideTitleWidget(axisSide: titleMeta.axisSide, child: Text(text, style: textstyle));
+  List<BarChartGroupData> buildBarGroups() {
+    return barData.map((data) => BarChartGroupData(
+      x: data.x,
+      barRods: [
+        BarChartRodData(
+          toY: data.y,
+          width: barWidth,
+          borderRadius: BorderRadius.circular(6),
+          color: Colors.lightBlue.shade900,
+          backDrawRodData: BackgroundBarChartRodData(
+            show: true,
+            toY: calculateMaxValue(),
+            color: Colors.grey.shade500,
+          ),
+        ),
+      ],
+    )).toList();
+  }
 }
